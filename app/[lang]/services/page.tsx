@@ -1,18 +1,28 @@
 import { defaultLocale, locales, type Lang } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { t } from "@/lib/i18n";
+import { t, locales, defaultLocale } from "@/lib/i18n";
 
+<<<<<<< Updated upstream
 type Params = Promise<{ lang: string }>; // Next 15 generates params as Promise
+=======
+type Params = Promise<{ lang: string }>;
+>>>>>>> Stashed changes
 
 export async function generateMetadata({
   params,
 }: {
   params: Params;
 }) {
+<<<<<<< Updated upstream
   const { lang: langRaw } = await params;
   const lang = (locales as readonly string[]).includes(langRaw)
     ? (langRaw as Lang)
+=======
+  const { lang: langParam } = await params;
+  const lang = (locales as readonly string[]).includes(langParam)
+    ? (langParam as Lang)
+>>>>>>> Stashed changes
     : defaultLocale;
   const base = process.env.AUTH_URL || "http://localhost:3000";
 
@@ -33,9 +43,15 @@ export default async function ServicesPage({
 }: {
   params: Params;
 }) {
+<<<<<<< Updated upstream
   const { lang: langRaw } = await params;
   const lang = (locales as readonly string[]).includes(langRaw)
     ? (langRaw as Lang)
+=======
+  const { lang: langParam } = await params;
+  const lang = (locales as readonly string[]).includes(langParam)
+    ? (langParam as Lang)
+>>>>>>> Stashed changes
     : defaultLocale;
 
   const services = await prisma.service.findMany({

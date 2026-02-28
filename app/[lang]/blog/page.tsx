@@ -1,16 +1,27 @@
 import type { Lang } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { t } from "@/lib/i18n";
+import { t, locales, defaultLocale } from "@/lib/i18n";
 
+<<<<<<< Updated upstream
 type Params = Promise<{ lang: Lang }>;
+=======
+type Params = Promise<{ lang: string }>;
+>>>>>>> Stashed changes
 
 export async function generateMetadata({
   params,
 }: {
   params: Params;
 }) {
+<<<<<<< Updated upstream
   const { lang } = await params;
+=======
+  const { lang: langParam } = await params;
+  const lang = (locales as readonly string[]).includes(langParam)
+    ? (langParam as Lang)
+    : defaultLocale;
+>>>>>>> Stashed changes
   const base = process.env.AUTH_URL || "http://localhost:3000";
 
   return {
@@ -32,7 +43,14 @@ export default async function Blog({
   params: Params;
   searchParams: Promise<{ page?: string }>;
 }) {
+<<<<<<< Updated upstream
   const { lang } = await params;
+=======
+  const { lang: langParam } = await params;
+  const lang = (locales as readonly string[]).includes(langParam)
+    ? (langParam as Lang)
+    : defaultLocale;
+>>>>>>> Stashed changes
   const sp = await searchParams;
 
   const page = Math.max(1, Number(sp?.page || "1"));

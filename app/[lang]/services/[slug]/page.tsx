@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 
 type Params = Promise<{ lang: string; slug: string }>;
 
+<<<<<<< Updated upstream
 function normalizeLang(value: string): Lang {
   return (locales as readonly string[]).includes(value) ? (value as Lang) : defaultLocale;
 }
@@ -18,6 +19,20 @@ export async function generateMetadata({ params }: { params: Params }) {
   const service = await prisma.service.findUnique({
     where: { slug },
   });
+=======
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}) {
+  const { lang: langParam, slug } = await params;
+  const lang = (locales as readonly string[]).includes(langParam)
+    ? (langParam as Lang)
+    : defaultLocale;
+
+  // Ищем услугу по slug в нужном языке
+  const service = await prisma.service.findUnique({ where: { slug } });
+>>>>>>> Stashed changes
 
   if (!service || !service.isPublished) return {};
 
@@ -37,22 +52,34 @@ export async function generateMetadata({ params }: { params: Params }) {
     title,
     description: desc || undefined,
     alternates: {
+<<<<<<< Updated upstream
       canonical: `${base}/${lang}/services/${service.slug}`,
       languages: {
         ru: `${base}/ru/services/${service.slug}`,
         en: `${base}/en/services/${service.slug}`,
+=======
+      canonical: `${base}/${lang}/services/${slug}`,
+      languages: {
+        ru: `${base}/ru/services/${lang === "ru" ? slug : service.slug}`,
+        en: `${base}/en/services/${lang === "en" ? slug : service.slug}`,
+>>>>>>> Stashed changes
       },
     },
     openGraph: {
       title,
       description: desc || undefined,
+<<<<<<< Updated upstream
       url: `${base}/${lang}/services/${service.slug}`,
+=======
+      url: `${base}/${lang}/services/${slug}`,
+>>>>>>> Stashed changes
       type: "website",
       images: service.ogImageUrl ? [service.ogImageUrl] : undefined,
     },
   };
 }
 
+<<<<<<< Updated upstream
 export default async function ServicePage({ params }: { params: Params }) {
   const { lang: rawLang, slug } = await params;
   const lang = normalizeLang(rawLang);
@@ -60,6 +87,19 @@ export default async function ServicePage({ params }: { params: Params }) {
   const service = await prisma.service.findUnique({
     where: { slug },
   });
+=======
+export default async function ServicePage({
+  params,
+}: {
+  params: Params;
+}) {
+  const { lang: langParam, slug } = await params;
+  const lang = (locales as readonly string[]).includes(langParam)
+    ? (langParam as Lang)
+    : defaultLocale;
+
+  const service = await prisma.service.findUnique({ where: { slug } });
+>>>>>>> Stashed changes
 
   if (!service || !service.isPublished) return notFound();
 

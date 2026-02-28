@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Field, Input, Button, Switch } from "@/components/admin/Form";
 import UploadWidget from "@/components/admin/UploadWidget";
-import { upsertBlogPost } from "../../actions";
+import { upsertBlogPost } from "../actions";
 import BlocksEditorSingle from "@/components/admin/BlocksEditorSingle";
 
 type Params = Promise<{ id: string }>;

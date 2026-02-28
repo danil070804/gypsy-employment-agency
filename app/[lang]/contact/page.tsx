@@ -1,13 +1,21 @@
 import type { Lang } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+<<<<<<< Updated upstream
 import { t } from "@/lib/i18n";
+=======
+import { t, locales, defaultLocale } from "@/lib/i18n";
+>>>>>>> Stashed changes
 import {
   normalizeWhatsapp,
   normalizeTelegram,
   normalizeInstagram,
 } from "@/lib/contacts";
 
+<<<<<<< Updated upstream
 type Params = Promise<{ lang: Lang }>;
+=======
+type Params = Promise<{ lang: string }>;
+>>>>>>> Stashed changes
 
 function ManagerCard({ m, lang }: { m: any; lang: Lang }) {
   const name = lang === "ru" ? m.nameRu : m.nameEn;
@@ -65,7 +73,14 @@ export async function generateMetadata({
 }: {
   params: Params;
 }) {
+<<<<<<< Updated upstream
   const { lang } = await params;
+=======
+  const { lang: langParam } = await params;
+  const lang = (locales as readonly string[]).includes(langParam)
+    ? (langParam as Lang)
+    : defaultLocale;
+>>>>>>> Stashed changes
 
   const base = process.env.AUTH_URL || "http://localhost:3000";
 
@@ -86,7 +101,14 @@ export default async function Contact({
 }: {
   params: Params;
 }) {
+<<<<<<< Updated upstream
   const { lang } = await params;
+=======
+  const { lang: langParam } = await params;
+  const lang = (locales as readonly string[]).includes(langParam)
+    ? (langParam as Lang)
+    : defaultLocale;
+>>>>>>> Stashed changes
 
   const managers = await prisma.manager.findMany({
     where: { isActive: true },
