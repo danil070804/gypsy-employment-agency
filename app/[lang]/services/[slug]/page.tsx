@@ -3,37 +3,74 @@ import { prisma } from "@/lib/prisma";
 import Blocks from "@/components/Blocks";
 import { notFound } from "next/navigation";
 
-export async function generateMetadata({ params }: { params: { lang: Lang; slug: string } }) {
-  const s = await prisma.service.findUnique({ where: { slug: params.slug } });
+type Params = Promise<{ lang: Lang; slug: string }>;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}) {
+  const { lang, slug } = await params;
+
+  // Ищем услугу по slug в нужном языке
+  const service = await prisma.service.findFirst({
+    where:
+      lang === "ru"
+        ? { slugRu: slug }
+        : { slugEn: slug },
+  });
+
+  if (!service || !service.isPublished) return {};
+
   const base = process.env.AUTH_URL || "http://localhost:3000";
 
-  if (!s || !s.isPublished) return {};
-  const title = params.lang === "ru" ? (s.metaTitleRu || s.titleRu) : (s.metaTitleEn || s.titleEn);
-  const desc = params.lang === "ru" ? (s.metaDescRu || s.excerptRu) : (s.metaDescEn || s.excerptEn);
+  const title =
+    lang === "ru"
+      ? service.metaTitleRu || service.titleRu
+      : service.metaTitleEn || service.titleEn;
+
+  const desc =
+    lang === "ru"
+      ? service.metaDescRu || service.excerptRu
+      : service.metaDescEn || service.excerptEn;
 
   return {
     title,
-    description: desc,
+    description: desc || undefined,
     alternates: {
-      canonical: `${base}/${params.lang}/services/${params.slug}`,
+      canonical: `${base}/${lang}/services/${slug}`,
       languages: {
-        ru: `${base}/ru/services/${params.slug}`,
-        en: `${base}/en/services/${params.slug}`,
+        ru: `${base}/ru/services/${lang === "ru" ? slug : service.slugRu}`,
+        en: `${base}/en/services/${lang === "en" ? slug : service.slugEn}`,
       },
     },
     openGraph: {
       title,
-      description: desc,
-      url: `${base}/${params.lang}/services/${params.slug}`,
-      images: s.ogImageUrl ? [s.ogImageUrl] : undefined,
-      type: "article",
+      description: desc || undefined,
+      url: `${base}/${lang}/services/${slug}`,
+      type: "website",
+      images: service.ogImageUrl ? [service.ogImageUrl] : undefined,
     },
   };
 }
 
-export default async function ServicePage({ params }: { params: { lang: Lang; slug: string } }) {
-  const s = await prisma.service.findUnique({ where: { slug: params.slug } });
-  if (!s || !s.isPublished) return notFound();
-  const blocks = params.lang === "ru" ? s.contentRu : s.contentEn;
-  return <Blocks blocks={blocks} lang={params.lang} />;
+export default async function ServicePage({
+  params,
+}: {
+  params: Params;
+}) {
+  const { lang, slug } = await params;
+
+  const service = await prisma.service.findFirst({
+    where:
+      lang === "ru"
+        ? { slugRu: slug }
+        : { slugEn: slug },
+  });
+
+  if (!service || !service.isPublished) return notFound();
+
+  const blocks = lang === "ru" ? service.contentRu : service.contentEn;
+
+  return <Blocks blocks={blocks} lang={lang} />;
 }
