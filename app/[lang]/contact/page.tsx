@@ -1,14 +1,20 @@
 import type { Lang } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { t } from "@/lib/i18n";
-import { normalizeWhatsApp, normalizeTelegram, normalizeInstagram } from "@/lib/contacts";
+import {
+  normalizeWhatsapp,
+  normalizeTelegram,
+  normalizeInstagram,
+} from "@/lib/contacts";
+
+type Params = Promise<{ lang: Lang }>;
 
 function ManagerCard({ m, lang }: { m: any; lang: Lang }) {
   const name = lang === "ru" ? m.nameRu : m.nameEn;
   const role = lang === "ru" ? m.roleRu : m.roleEn;
 
   const links = {
-    whatsapp: normalizeWhatsApp(m.whatsapp),
+    whatsapp: normalizeWhatsapp(m.whatsapp),
     telegram: normalizeTelegram(m.telegram),
     instagram: normalizeInstagram(m.instagram),
     email: m.email ? `mailto:${m.email}` : null,
@@ -19,7 +25,14 @@ function ManagerCard({ m, lang }: { m: any; lang: Lang }) {
   return (
     <div className="rounded-2xl border bg-white p-5">
       <div className="mb-4 aspect-square overflow-hidden rounded-xl bg-slate-100">
-        {m.photoUrl ? <img src={m.photoUrl} alt={name} className="h-full w-full object-cover" /> : null}
+        {m.photoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={m.photoUrl}
+            alt={name}
+            className="h-full w-full object-cover"
+          />
+        ) : null}
       </div>
 
       <div className="text-base font-semibold">{name}</div>
@@ -29,13 +42,14 @@ function ManagerCard({ m, lang }: { m: any; lang: Lang }) {
         {order.map((k) => {
           const href = links[k];
           if (!href) return null;
+
           return (
             <a
               key={k}
               href={href}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full border px-3 py-2 text-xs font-medium"
+              target={k === "email" ? undefined : "_blank"}
+              rel={k === "email" ? undefined : "noreferrer"}
+              className="rounded-full border px-3 py-2 text-xs font-medium hover:bg-slate-50"
             >
               {k}
             </a>
@@ -46,8 +60,6 @@ function ManagerCard({ m, lang }: { m: any; lang: Lang }) {
   );
 }
 
-type Params = Promise<{ lang: Lang }>;
-
 export async function generateMetadata({
   params,
 }: {
@@ -55,7 +67,18 @@ export async function generateMetadata({
 }) {
   const { lang } = await params;
 
-  // дальше твой текущий код меты
+  const base = process.env.AUTH_URL || "http://localhost:3000";
+
+  return {
+    title: t(lang, "Контакты", "Contacts"),
+    alternates: {
+      canonical: `${base}/${lang}/contact`,
+      languages: {
+        ru: `${base}/ru/contact`,
+        en: `${base}/en/contact`,
+      },
+    },
+  };
 }
 
 export default async function Contact({
@@ -65,21 +88,29 @@ export default async function Contact({
 }) {
   const { lang } = await params;
 
-  // дальше твой текущий код страницы, просто используй переменную lang
-}
+  const managers = await prisma.manager.findMany({
+    where: { isActive: true },
+    orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+  });
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold md:text-3xl">{t(params.lang, "Выбор менеджера", "Choose a manager")}</h1>
+        <h1 className="text-2xl font-semibold md:text-3xl">
+          {t(lang, "Выбор менеджера", "Choose a manager")}
+        </h1>
         <p className="mt-2 text-slate-600">
-          {t(params.lang, "Нажмите на нужный контакт — показываются только заполненные.", "Tap a contact method — only filled ones are shown.")}
+          {t(
+            lang,
+            "Нажмите на нужный контакт — показываются только заполненные.",
+            "Tap a contact method — only filled ones are shown."
+          )}
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         {managers.map((m) => (
-          <ManagerCard key={m.id} m={m} lang={params.lang} />
+          <ManagerCard key={m.id} m={m} lang={lang} />
         ))}
       </div>
     </div>
