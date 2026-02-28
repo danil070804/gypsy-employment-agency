@@ -17,9 +17,14 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "types": [
-      "node"
-    ]
+
+    // 🔥 ВАЖНО — вот это добавляем:
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
+
+    "types": ["node"]
   },
   "include": [
     "next-env.d.ts",
