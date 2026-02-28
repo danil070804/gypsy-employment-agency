@@ -1,23 +1,22 @@
 import type { Lang } from "@/lib/i18n";
+import { locales, defaultLocale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import Blocks from "@/components/Blocks";
 import { notFound } from "next/navigation";
 
-type Params = Promise<{ lang: Lang; slug: string }>;
+type Params = Promise<{ lang: string; slug: string }>;
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Params;
-}) {
-  const { lang, slug } = await params;
+function normalizeLang(value: string): Lang {
+  return (locales as readonly string[]).includes(value) ? (value as Lang) : defaultLocale;
+}
 
-  // Ищем услугу по slug в нужном языке
-  const service = await prisma.service.findFirst({
-    where:
-      lang === "ru"
-        ? { slugRu: slug }
-        : { slugEn: slug },
+export async function generateMetadata({ params }: { params: Params }) {
+  const { lang: rawLang, slug } = await params;
+  const lang = normalizeLang(rawLang);
+
+  // У модели Service один slug (общий для обоих языков)
+  const service = await prisma.service.findUnique({
+    where: { slug },
   });
 
   if (!service || !service.isPublished) return {};
@@ -38,34 +37,28 @@ export async function generateMetadata({
     title,
     description: desc || undefined,
     alternates: {
-      canonical: `${base}/${lang}/services/${slug}`,
+      canonical: `${base}/${lang}/services/${service.slug}`,
       languages: {
-        ru: `${base}/ru/services/${lang === "ru" ? slug : service.slugRu}`,
-        en: `${base}/en/services/${lang === "en" ? slug : service.slugEn}`,
+        ru: `${base}/ru/services/${service.slug}`,
+        en: `${base}/en/services/${service.slug}`,
       },
     },
     openGraph: {
       title,
       description: desc || undefined,
-      url: `${base}/${lang}/services/${slug}`,
+      url: `${base}/${lang}/services/${service.slug}`,
       type: "website",
       images: service.ogImageUrl ? [service.ogImageUrl] : undefined,
     },
   };
 }
 
-export default async function ServicePage({
-  params,
-}: {
-  params: Params;
-}) {
-  const { lang, slug } = await params;
+export default async function ServicePage({ params }: { params: Params }) {
+  const { lang: rawLang, slug } = await params;
+  const lang = normalizeLang(rawLang);
 
-  const service = await prisma.service.findFirst({
-    where:
-      lang === "ru"
-        ? { slugRu: slug }
-        : { slugEn: slug },
+  const service = await prisma.service.findUnique({
+    where: { slug },
   });
 
   if (!service || !service.isPublished) return notFound();
