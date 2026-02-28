@@ -60,11 +60,17 @@ export async function generateMetadata({ params }: { params: { lang: Lang } }) {
   };
 }
 
-export default async function Contact({ params }: { params: { lang: Lang } }) {
-  const managers = await prisma.manager.findMany({
-    where: { isActive: true },
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-  });
+type Params = Promise<{ lang: Lang }>;
+
+export default async function Contact({
+  params,
+}: {
+  params: Params;
+}) {
+  const { lang } = await params;
+
+  // дальше твой текущий код страницы, просто используй переменную lang
+}
 
   return (
     <div className="space-y-8">
