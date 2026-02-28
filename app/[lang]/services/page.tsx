@@ -1,16 +1,19 @@
-import type { Lang } from "@/lib/i18n";
+import { defaultLocale, locales, type Lang } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { t } from "@/lib/i18n";
 
-type Params = Promise<{ lang: Lang }>;
+type Params = Promise<{ lang: string }>; // Next 15 generates params as Promise
 
 export async function generateMetadata({
   params,
 }: {
   params: Params;
 }) {
-  const { lang } = await params;
+  const { lang: langRaw } = await params;
+  const lang = (locales as readonly string[]).includes(langRaw)
+    ? (langRaw as Lang)
+    : defaultLocale;
   const base = process.env.AUTH_URL || "http://localhost:3000";
 
   return {
@@ -30,7 +33,10 @@ export default async function ServicesPage({
 }: {
   params: Params;
 }) {
-  const { lang } = await params;
+  const { lang: langRaw } = await params;
+  const lang = (locales as readonly string[]).includes(langRaw)
+    ? (langRaw as Lang)
+    : defaultLocale;
 
   const services = await prisma.service.findMany({
     where: { isPublished: true },
@@ -56,7 +62,7 @@ export default async function ServicesPage({
         {services.map((s) => {
           const title = lang === "ru" ? s.titleRu : s.titleEn;
           const excerpt = lang === "ru" ? s.excerptRu : s.excerptEn;
-          const slug = lang === "ru" ? s.slugRu : s.slugEn;
+          const slug = s.slug;
 
           return (
             <div key={s.id} className="rounded-2xl border bg-white p-5">
