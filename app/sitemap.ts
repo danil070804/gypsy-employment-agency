@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 export default async function sitemap() {
-  const base = process.env.AUTH_URL || "http://localhost:3000";
+  const base = process.env.AUTH_URL || "https://siteemploymentltd1-production.up.railway.app";
 
   const staticPaths = [
     "", "/about", "/services", "/contact", "/blog", "/privacy", "/cookies",
