@@ -46,21 +46,17 @@ function ManagerCard({ m, lang }: { m: any; lang: Lang }) {
   );
 }
 
-export async function generateMetadata({ params }: { params: { lang: Lang } }) {
-  const base = process.env.AUTH_URL || "http://localhost:3000";
-  return {
-    title: params.lang === "ru" ? "Контакты — Выбор менеджера" : "Contact — Choose manager",
-    alternates: {
-      canonical: `${base}/${params.lang}/contact`,
-      languages: {
-        ru: `${base}/ru/contact`,
-        en: `${base}/en/contact`,
-      },
-    },
-  };
-}
-
 type Params = Promise<{ lang: Lang }>;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}) {
+  const { lang } = await params;
+
+  // дальше твой текущий код меты
+}
 
 export default async function Contact({
   params,
