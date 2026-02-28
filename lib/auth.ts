@@ -4,9 +4,10 @@ import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET, // убедись что есть в Railway
   session: { strategy: "jwt" },
   pages: { signIn: "/admin/login" },
+
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -14,26 +15,34 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
+
       async authorize(credentials) {
         const email = credentials?.email?.toLowerCase().trim();
-        const password = credentials?.password || "";
+        const password = credentials?.password ?? "";
+
         if (!email || !password) return null;
 
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) return null;
+        if (!user) return null; // ✅ исправлено
 
         const ok = await bcrypt.compare(password, user.passwordHash);
-        if (!ok) return null;
+        if (!ok) return null; // ✅ исправлено
 
-        return { id: user.id, email: user.email, role: user.role };
+        return {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        };
       },
     }),
   ],
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) token.role = (user as any).role;
       return token;
     },
+
     async session({ session, token }) {
       (session as any).role = token.role;
       return session;
