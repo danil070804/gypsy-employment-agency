@@ -22,7 +22,7 @@ export async function generateMetadata({
     ? (langParam as Lang)
     : defaultLocale;
 >>>>>>> Stashed changes
-  const base = process.env.AUTH_URL || "http://localhost:3000";
+  const base = process.env.AUTH_URL || "https://siteemploymentltd1-production.up.railway.app/";
 
   return {
     title: lang === "ru" ? "Блог" : "Blog",
