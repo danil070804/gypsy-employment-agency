@@ -13,7 +13,7 @@ export async function middleware(req: NextRequest) {
     // Allow next-auth endpoints
     if (pathname.startsWith("/api/auth")) return NextResponse.next();
 
-    const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     if (!token) {
       const url = req.nextUrl.clone();
       url.pathname = "/admin/login";
