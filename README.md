@@ -33,6 +33,7 @@ AUTH_URL=https://siteemploymentltd1-production.up.railway.app
 NEXTAUTH_URL=https://siteemploymentltd1-production.up.railway.app
 AUTH_SECRET=ZLrK9k1Lq1d+G6V5jVtP3Xv9M0c7WzY8N2Q4rT6u
 NEXTAUTH_SECRET=ZLrK9k1Lq1d+G6V5jVtP3Xv9M0c7WzY8N2Q4rT6u
+UPLOAD_DIR="/app/public/uploads
 ```
 
 ### DB migrate + seed
@@ -46,7 +47,7 @@ npm run db:seed
 npm run dev
 ```
 
-Admin: `http://localhost:3000/admin` (redirects to login)
+Admin: `[http://localhost:3000/admin](https://siteemploymentltd1-production.up.railway.app/admin/login)` (redirects to login)
 
 ---
 
