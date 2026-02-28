@@ -47,7 +47,7 @@ npm run db:seed
 npm run dev
 ```
 
-Admin: `[http://localhost:3000/admin](https://siteemploymentltd1-production.up.railway.app/admin/login)` (redirects to login)
+Admin: `http://localhost:3000/admin](https://siteemploymentltd1-production.up.railway.app/admin/login` (redirects to login)
 
 ---
 
