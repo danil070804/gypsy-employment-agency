@@ -17,3 +17,5 @@ export function normalizeInstagram(value?: string | null) {
   const username = value.replace("@", "");
   return `https://instagram.com/${username}`;
 }
+
+export const normalizeWhatsapp = normalizeWhatsApp;
