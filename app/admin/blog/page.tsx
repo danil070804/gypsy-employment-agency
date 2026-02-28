@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { deleteBlogPost } from "./actions";
+import { deleteBlogPost } from "../actions";
 
 export default async function BlogAdmin() {
   const posts = await prisma.blogPost.findMany({
