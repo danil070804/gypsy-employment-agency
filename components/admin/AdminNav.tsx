@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "next-auth/link";
 
 export default function AdminNav() {
   const items = [
