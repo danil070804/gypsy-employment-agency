@@ -1,17 +1,23 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Field, Input, Button, Switch } from "@/components/admin/Form";
+import UploadWidget from "@/components/admin/UploadWidget";
 import { updateManager, deleteManager } from "../../actions";
 
-export default async function EditManagerPage({ params }: { params: { id: string } }) {
-  const m = await prisma.manager.findUnique({ where: { id: params.id } });
+type Params = Promise<{ id: string }>;
+
+
+export default async function EditManagerPage({ params }: { params: Params }) {
+  const { id } = await params;
+
+  const m = await prisma.manager.findUnique({ where: { id: id } });
   if (!m) return notFound();
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Edit manager</h1>
 
-      <form action={async (fd) => { "use server"; await updateManager(params.id, fd); }} className="space-y-4 rounded-2xl border bg-white p-5">
+      <form action={async (fd) => { "use server"; await updateManager(id, fd); }} className="space-y-4 rounded-2xl border bg-white p-5">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Name (RU)"><Input name="nameRu" defaultValue={m.nameRu} required /></Field>
           <Field label="Name (EN)"><Input name="nameEn" defaultValue={m.nameEn} required /></Field>
@@ -34,7 +40,7 @@ export default async function EditManagerPage({ params }: { params: { id: string
 
         <div className="flex flex-wrap gap-2 pt-3">
           <Button type="submit">Save</Button>
-          <form action={async () => { "use server"; await deleteManager(params.id); }}>
+          <form action={async () => { "use server"; await deleteManager(id); }}>
             <Button type="submit" variant="danger">Delete</Button>
           </form>
         </div>
